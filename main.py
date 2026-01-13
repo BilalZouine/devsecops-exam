@@ -4,15 +4,16 @@ import subprocess
 
 app = Flask(__name__)
 
-#  Mot de passe en dur (Bandit / CodeQL)
+#  Mot de passe en dur (Bandit: hardcoded_password)
 ADMIN_PASSWORD = "123456"
 
-#  Cryptographie faible (MD5)
+#  Cryptographie faible (Bandit: weak_hash_md5)
 def hash_password(password):
     return hashlib.md5(password.encode()).hexdigest()
 
 @app.route("/login")
 def login():
+    #  Données sensibles via GET
     username = request.args.get("username")
     password = request.args.get("password")
 
@@ -24,20 +25,20 @@ def login():
 
 @app.route("/ping")
 def ping():
-    host = request.args.get("host", "localhost")
+    #  Entrée utilisateur non filtrée
+    host = request.args.get("host")
 
-    #  Injection de commande (shell=True)
-    result = subprocess.check_output(
-        f"ping -c 1 {host}",
+    #  Injection de commande (Bandit: subprocess_shell)
+    output = subprocess.check_output(
+        "ping -c 1 " + host,
         shell=True
     )
-    return result
+    return output
 
 @app.route("/hello")
 def hello():
-    name = request.args.get("name", "user")
-
-    #  XSS potentiel (CodeQL)
+    #  XSS réfléchi (CodeQL)
+    name = request.args.get("name")
     return f"<h1>Hello {name}</h1>"
 
 if __name__ == "__main__":
