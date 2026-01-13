@@ -4,7 +4,8 @@ import subprocess
 
 app = Flask(__name__)
 
-# Mot de passe en dur (mauvaise pratique)
+
+# Mot de passe en dur (mauvaise pratique) ..
 ADMIN_PASSWORD = "123456"
 
 # Cryptographie faible (MD5)
